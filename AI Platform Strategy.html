@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Platform Strategy Playbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Warm Neutral Harmony" - A calming palette with a beige background, slate grays for text, and subtle teal and terracotta for accents. -->
+    <!-- Application Structure Plan: The application is designed as a vertical, single-page journey that mirrors the report's step-by-step playbook. A sticky navigation bar allows users to jump between the core stages (Principles, The Playbook, Timeline, etc.). The playbook itself is the main focus, presented as a series of expandable, interactive sections. This linear, guided-path structure was chosen because the source material is a process-oriented playbook. It makes the complex workflow easy to follow, allowing users to drill into the details of each stage without losing their place in the overall architecture. Key interactions include clicking on a stage to reveal its detailed steps, inputs, and outputs, and hovering over key terms for tooltips. -->
+    <!-- Visualization & Content Choices: 
+        - North Star: Report Info -> External/Internal goals. Goal -> Inform. Viz -> Icon-based cards in a two-column layout. Interaction -> Static. Justification -> Clearly separates customer-facing and internal strategic goals, providing a high-level vision. Method -> HTML/Tailwind.
+        - Scars from Past: Report Info -> List of traps and positive mindsets. Goal -> Inform. Viz -> Icon-based list. Interaction -> Static. Justification -> Clearly lists lessons learned from past experiences. Method -> HTML/Tailwind.
+        - Strategic Impact Matrix: Report Info -> Interpretation of "Scars" content. Goal -> Organize/Analyze. Viz -> 2x2 matrix. Interaction -> Static. Justification -> Provides a strategic framework for prioritizing actions and avoiding common pitfalls based on their impact and effort. Method -> HTML/Tailwind.
+        - Platform Definition: Report Info -> What a platform is and is not. Goal -> Inform. Viz -> Two-column list. Interaction -> Static. Justification -> Provides a clear, foundational definition of the platform concept. Method -> HTML/Tailwind.
+        - Guiding Principles: Report Info -> 6 core principles. Goal -> Inform. Viz -> Icon-based cards. Interaction -> Static display. Justification -> Icons provide quick visual cues for each principle, making them memorable. Method -> HTML/Tailwind.
+        - Architecture Flow: Report Info -> 6 main stages of the D2V pipeline including feedback loop. Goal -> Organize/Change. Viz -> A horizontal, connected-node diagram. Interaction -> Clicking a node scrolls to the relevant playbook section. Justification -> A visual flowchart is the most intuitive way to represent a multi-stage process. Method -> HTML/Tailwind.
+        - Playbook Steps: Report Info -> Detailed steps, inputs, outputs, DoD for each stage. Goal -> Inform/Organize. Viz -> Expandable accordion-style sections. Interaction -> Click to expand/collapse. Justification -> Hides complexity by default, allowing users to focus on one stage at a time and drill down as needed. Method -> HTML/JS.
+        - Pictorial Representations: Report Info -> The core concepts of each of the 6 stages. Goal -> Inform/Organize. Viz -> Simplified diagrams using HTML/CSS. Interaction -> Static. Justification -> Provides a quick, high-level visual summary of what happens in each stage, reinforcing the concepts from the detailed playbook. Method -> HTML/Tailwind.
+        - Execution Timeline: Report Info -> Phased 6-month execution plan. Goal -> Change. Viz -> A vertical timeline flow. Interaction -> Static display. Justification -> Clearly visualizes a realistic chronological progression and key deliverables over two quarters. Method -> HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Warm Beige */
+            color: #4A5568; /* Slate Gray */
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            padding-bottom: 0.5rem;
+        }
+        .tab-button.active {
+            color: #E97777; /* Terracotta Accent */
+            border-bottom-color: #E97777;
+            font-weight: 600;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .flow-node {
+            border: 2px solid #319795; /* Teal Accent */
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .flow-node:hover {
+            background-color: #319795;
+            color: white;
+        }
+        .flow-line {
+            width: 100%;
+            height: 2px;
+            background-color: #319795;
+        }
+        .tag {
+            background-color: #E6FFFA;
+            color: #319795;
+        }
+        /* Roadmap Styles */
+        .roadmap-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        .layer-cake-base {
+            background-color: #004AAD;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .layer-cake-top {
+            background-color: #008DDA;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+            padding-left: 2.5rem;
+            border-left: 4px solid #41C9E2;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -11px;
+            top: 0;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background-color: #ACE2E1;
+            border: 4px solid #41C9E2;
+        }
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #004AAD;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-6 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">AI Platform Strategy Playbook</h1>
+            <div class="mt-4 text-xs text-gray-500">
+                <p>Disclaimer: Insights are drawn from years of platform-building experience (Excluding KF1 Platform).</p>
+                <p>Excerpts from the presenter's upcoming book.</p>
+            </div>
+        </div>
+
+        <!-- Header & Navigation -->
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg shadow-sm mb-8">
+            <nav class="container mx-auto px-6 py-3">
+                <div class="flex items-center justify-center flex-wrap gap-x-4 md:gap-x-8">
+                    <button data-tab="northstar" class="tab-button font-medium text-lg active">North Star</button>
+                    <button data-tab="scars" class="tab-button font-medium text-lg">Scars from Past</button>
+                    <button data-tab="matrix" class="tab-button font-medium text-lg">Strategic Matrix</button>
+                    <button data-tab="platform" class="tab-button font-medium text-lg">Platform</button>
+                    <button data-tab="playbook" class="tab-button font-medium text-lg">D2V Playbook</button>
+                    <button data-tab="kfone" class="tab-button font-medium text-lg">KFONE Integration</button>
+                    <button data-tab="roadmap" class="tab-button font-medium text-lg">Launch Roadmap</button>
+                    <button data-tab="timeline" class="tab-button font-medium text-lg">Execution Timeline</button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Tab Content: North Star -->
+            <div id="northstar-content" class="tab-panel">
+                 <section class="text-center mb-20">
+                    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">Our North Star Vision</h1>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">The guiding principles that define our goals, both for our customers and for our internal teams. This is the "why" behind our AI platform.</p>
+                </section>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <!-- External Section -->
+                    <section>
+                        <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">External: Customer & Market Impact</h2>
+                        <div class="space-y-8">
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">🎯</span>Customer</h3>
+                                <p class="text-lg ml-10">Pro-actively help customers achieve their goals.</p>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💎</span>Value</h3>
+                                <p class="text-lg ml-10">Unlock significant and measurable business value.</p>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💰</span>Revenue</h3>
+                                <ul class="list-disc list-inside ml-10 space-y-2 text-lg">
+                                    <li>Accelerate existing revenue growth.</li>
+                                    <li>Create new revenue growth opportunities.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Internal Section -->
+                    <section>
+                        <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Internal: Organizational Enablement</h2>
+                        <div class="space-y-8">
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">🤝</span>Teams</h3>
+                                <p class="text-lg ml-10">Enable teams to accelerate de-centralized product innovation.</p>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">⚡</span>Organization</h3>
+                                <p class="text-lg ml-10">Drive innovation at a faster pace across the entire company.</p>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💎</span>Value</h3>
+                                <p class="text-lg ml-10">Unlock significant and measurable business value.</p>
+                            </div>
+                            <div class="card p-6 rounded-lg">
+                                <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💰</span>Revenue</h3>
+                                 <ul class="list-disc list-inside ml-10 space-y-2 text-lg">
+                                    <li>Accelerate existing revenue growth.</li>
+                                    <li>Create new revenue growth opportunities.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Tab Content: Scars from Past -->
+            <div id="scars-content" class="tab-panel hidden">
+                <section class="text-center mb-20">
+                    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">Scars From The Past</h1>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">Key lessons learned from years of platform-building experience. These are the traps to avoid and the mindsets to adopt.</p>
+                </section>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div>
+                        <h2 class="text-3xl font-bold text-red-600 mb-6 text-center">Traps to Avoid</h2>
+                        <div class="space-y-4">
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">🚫</span><span>"Science Project" Trap</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">🚫</span><span>"One-Size-Fits-All" Myth</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">🚫</span><span>"Data Swampland" Trap</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">🚫</span><span>"Cool Tech, No Value" Trap</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">🚫</span><span>"Post-Hoc Revenue" Illusion</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold text-green-600 mb-6 text-center">Mindsets to Adopt</h2>
+                        <div class="space-y-4">
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">✅</span><span>Platform-as-a-Product Mindset</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">✅</span><span>Secure-by-Design Data Pipelines</span></div>
+                            <div class="card p-4 rounded-lg flex items-center"><span class="text-3xl mr-4">✅</span><span>Focus on Measurable Impact (KPIs)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Strategic Impact Matrix -->
+            <div id="matrix-content" class="tab-panel hidden">
+                <section class="text-center mb-12">
+                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Strategic Impact Matrix</h1>
+                     <p class="text-lg text-gray-600 max-w-3xl mx-auto">Prioritizing actions by balancing their potential impact against the effort required. This matrix helps focus resources on what truly matters.</p>
+                </section>
+                <div class="relative max-w-5xl mx-auto">
+                    <div class="grid grid-cols-2 grid-rows-2 gap-4">
+                        <div class="bg-green-50 border-2 border-green-200 p-4 rounded-lg">
+                            <h3 class="font-bold text-lg text-green-800">High Impact / Low Effort (Quick Wins)</h3>
+                            <ul class="mt-2 list-disc list-inside text-green-700">
+                                <li>Adopt Platform-as-a-Product Mindset</li>
+                                <li>Focus on Measurable Impact (KPIs)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-lg">
+                            <h3 class="font-bold text-lg text-blue-800">High Impact / High Effort (Major Projects)</h3>
+                            <ul class="mt-2 list-disc list-inside text-blue-700">
+                                <li>Build Secure-by-Design Data Pipelines</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-lg">
+                            <h3 class="font-bold text-lg text-yellow-800">Low Impact / Low Effort (Fill-ins / Avoid)</h3>
+                             <ul class="mt-2 list-disc list-inside text-yellow-700">
+                                <li>Avoid "One-Size-Fits-All" Myth</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 border-2 border-red-200 p-4 rounded-lg">
+                            <h3 class="font-bold text-lg text-red-800">Low Impact / High Effort (Thankless Tasks / Avoid)</h3>
+                            <ul class="mt-2 list-disc list-inside text-red-700">
+                                <li>Avoid "Science Project" & "Cool Tech" Traps</li>
+                                <li>Avoid "Data Swampland" & "Post-Hoc Revenue"</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -translate-y-1/2"></div>
+                    <div class="absolute left-1/2 top-0 h-full w-0.5 bg-gray-300 -translate-x-1/2"></div>
+                    <div class="absolute top-1/2 -left-16 text-center font-bold transform -translate-y-1/2 -rotate-90">Impact</div>
+                    <div class="absolute -bottom-10 left-1/2 text-center font-bold transform -translate-x-1/2">Effort</div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Platform -->
+            <div id="platform-content" class="tab-panel hidden">
+                 <section class="text-center mb-12">
+                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">What is a Platform?</h1>
+                     <p class="text-lg text-gray-600 max-w-3xl mx-auto">Defining the characteristics of a true platform to establish a shared understanding and purpose.</p>
+                </section>
+                <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-16">
+                    <div class="card p-6 rounded-lg bg-blue-50 border-blue-200">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4 text-center">WHAT IT IS</h3>
+                        <ul class="space-y-4 text-lg">
+                            <li><strong>Foundation:</strong> Built to enable others.</li>
+                            <li><strong>Re-Usable & Scalable:</strong> Provides common services (CI/CD, Auth).</li>
+                            <li><strong>Extensible:</strong> Supports APIs, integrations.</li>
+                            <li><strong>Abstracts Complexity:</strong> Designed for multiple teams.</li>
+                        </ul>
+                    </div>
+                    <div class="card p-6 rounded-lg bg-red-50 border-red-200">
+                        <h3 class="text-2xl font-bold text-red-800 mb-4 text-center">WHAT IT IS NOT</h3>
+                        <ul class="space-y-4 text-lg">
+                            <li><strong>Not a tool or app:</strong> It is not a SaaS application.</li>
+                            <li><strong>Not custom built for one app/team/tech:</strong> It's a solution, not a problem.</li>
+                            <li><strong>Not static:</strong> Evolves with use cases/teams/versioning.</li>
+                            <li><strong>Not an end product:</strong> A platform is an enabler.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <section id="data-platform" class="mb-12">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Data Platform Overview</h2>
+                    <p class="text-center text-gray-500 italic mb-8">"It's the 'water supply' and 'plumbing' for the entire enterprise."</p>
+                    <div class="card p-6 rounded-lg max-w-3xl mx-auto">
+                        <ul class="space-y-4 text-lg">
+                            <li><strong>Goal:</strong> Make data trustworthy, well-structured, and consumable.</li>
+                            <li><strong>Focus:</strong> Collecting, storing, governing, and making data accessible. Includes data lakes, marts, pipelines, governance, security, and quality controls.</li>
+                            <li><strong>Outcome:</strong> Each team can have its very own data mart (versioned / curated / latest).</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="ai-platform">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">AI Platform Overview</h2>
+                    <p class="text-center text-gray-500 italic mb-8">"A specialized engine on top of that foundation. This is the Platform + Agent's framework."</p>
+                     <div class="card p-6 rounded-lg max-w-3xl mx-auto">
+                        <ul class="space-y-4 text-lg">
+                            <li><strong>Goal:</strong> Take curated data and convert it into models, insights, and intelligent agents.</li>
+                            <li><strong>Focus:</strong> Provide tooling to train, deploy, monitor, and manage AI/ML models and agents. Handles MLOps, feature stores, vector DBs, experimentation, and lifecycle management.</li>
+                            <li><strong>Outcome:</strong> Each team can safely build, train, and evaluate domain-specific agents on their own data with gated promotion from dev → stage → prod.</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab Content: D2V Playbook -->
+            <div id="playbook-content" class="tab-panel hidden">
+                <!-- Hero Section -->
+                <section class="text-center mb-20">
+                    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">Turn Raw Data into Measurable Business Impact</h1>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">An interactive guide to the Data-to-Value Architecture, designed to help you build a modern data and AI platform quickly and safely.</p>
+                </section>
+
+                <!-- Guiding Principles Section -->
+                <section id="principles" class="mb-20">
+                    <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Guiding Principles & Guardrails</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Work Backwards from Value</h3>
+                            <p>Prevents "science projects" by aligning every action with specific business KPIs from day one.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">📜</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Data Contracts First</h3>
+                            <p>Treats upstream schemas as APIs with SLAs, dramatically reducing pipeline fragility and downstream errors.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">🥇</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Medallion Data Flow</h3>
+                            <p>Ensures data quality with a strict Bronze ➜ Silver ➜ Gold promotion, with validation at each stage.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">🛡️</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Secure by Default</h3>
+                            <p>Implements ABAC/RBAC, PII tagging, and least-privilege access as a foundational, not an afterthought.</p>
+                        </div>
+                        <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">📈</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Measure Everything</h3>
+                            <p>Tracks freshness, quality, latency, cost per insight, and ROI to prove and improve value continuously.</p>
+                        </div>
+                         <div class="card p-6 rounded-lg text-center">
+                            <div class="text-4xl mb-4">🔄</div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">Close the Loop</h3>
+                            <p>Treat user feedback as a first-class data source to create a system that continuously learns.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- The Playbook Section -->
+                <section id="playbook" class="mb-20">
+                    <h2 class="text-4xl font-bold text-center text-gray-800 mb-6">The Step-by-Step Playbook</h2>
+                    <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-12">This playbook provides a structured program to run across teams and vendors. Click on each stage below to explore its detailed steps, inputs, outputs, and definition of done.</p>
+                    <div class="flex items-center justify-center mb-16">
+                        <div class="w-full">
+                            <div class="flex items-center relative">
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-1"><div class="font-bold text-sm md:text-base">1. Data Sources</div></div>
+                                <div class="flex-1 relative"><div class="flow-line absolute top-1/2 left-0 transform -translate-y-1/2"></div></div>
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-2"><div class="font-bold text-sm md:text-base">2. Curation</div></div>
+                                <div class="flex-1 relative"><div class="flow-line absolute top-1/2 left-0 transform -translate-y-1/2"></div></div>
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-3"><div class="font-bold text-sm md:text-base">3. AI Engines</div></div>
+                                <div class="flex-1 relative"><div class="flow-line absolute top-1/2 left-0 transform -translate-y-1/2"></div></div>
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-4"><div class="font-bold text-sm md:text-base">4. Applications</div></div>
+                                <div class="flex-1 relative"><div class="flow-line absolute top-1/2 left-0 transform -translate-y-1/2"></div></div>
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-5"><div class="font-bold text-sm md:text-base">5. Client Value</div></div>
+                                <div class="flex-1 relative"><div class="flow-line absolute top-1/2 left-0 transform -translate-y-1/2"></div></div>
+                                <div class="flow-node flex-1 p-3 rounded-lg text-center z-10" data-target="step-6"><div class="font-bold text-sm md:text-base">6. Feedback Loop</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="playbook-steps" class="space-y-4">
+                        <div id="step-1" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">1. Data Sources — Inventory & Onboarding</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Discover, prioritize, and reliably ingest the data that drives value.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>Use cases</li><li>System list</li><li>Data owners</li><li>Compliance constraints</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>Source Register</li><li>Data Contracts</li><li>Ingestion Runbooks</li><li>Observability baselines</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>Top 5 sources ingested to Bronze with contracts, lineage, and alerting. Access via service principals only.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Backcast from business outcomes:</strong> List exact data fields and latency needs for each use case.</li><li><strong>Source inventory & criticality score:</strong> Catalog all systems and score based on impact, quality, and risk.</li><li><strong>Define data contracts:</strong> Treat schemas as APIs with explicit SLAs for freshness, timeliness, and completeness.</li><li><strong>Choose ingestion pattern:</strong> Select from CDC, Batch, Stream, or Files based on source and need.</li><li><strong>Implement observability on day 1:</strong> Set up freshness SLOs, volume checks, and schema drift alerts.</li></ol></div></div></div>
+                        <div id="step-2" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">2. Data Curation & Enrichment — From Raw to Usable Knowledge</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Create trustworthy, searchable, and analytics/RAG-ready data.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>Bronze data</li><li>Data contracts</li><li>Business definitions</li><li>Compliance tags</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>Silver canonical models</li><li>Gold marts</li><li>Knowledge store</li><li>Quality dashboards</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>Silver/Gold datasets have passing tests and published SLAs. Knowledge store is searchable with metadata filters.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Define Canonical Data Model (CDM):</strong> Create standard definitions for key entities like Customer, Account, etc.</li><li><strong>Implement quality rules & tests:</strong> Enforce nullability, valid ranges, and referential integrity.</li><li><strong>Perform Entity Resolution (ER):</strong> Merge duplicate records using deterministic and probabilistic matching.</li><li><strong>Tag PII/PHI and enforce governance:</strong> Auto-classify sensitive data and apply masking policies.</li><li><strong>Build knowledge store for unstructured data:</strong> Implement chunking, metadata extraction, and indexing for RAG.</li></ol></div></div></div>
+                        <div id="step-3" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">3. AI Engines — LLM/RAG & Predictive Models</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Deliver accurate, controllable, and cost-efficient AI.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>Curated tables</li><li>Knowledge store</li><li>Labeled eval sets</li><li>Safety rules</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>Model registry entries</li><li>RAG services</li><li>Prompt libraries</li><li>Evaluation reports</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>RAG endpoint meets quality SLOs on gold set and passes safety checks. Full observability into tracing and costs.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Select models with a matrix:</strong> Map tasks to models based on privacy, latency, cost, and other factors.</li><li><strong>Design RAG architecture:</strong> Implement hybrid search, re-ranking, metadata filters, and semantic caching.</li><li><strong>Engineer prompts and tooling:</strong> Version prompts, define input/output contracts, and implement retries with fallbacks.</li><li><strong>Establish evaluation & quality gates:</strong> Use offline (Recall@K, NDCG) and online (A/B tests, human rating) metrics.</li><li><strong>Ensure safety, privacy, and compliance:</strong> Implement pre-inference redaction, content filters, and audit logs.</li></ol></div></div></div>
+                        <div id="step-4" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">4. Applications — Client-Facing & Internal</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Put AI where work happens with measurable adoption.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>Use-case PRDs</li><li>User journeys</li><li>SLAs</li><li>Security model</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>Agent services/APIs</li><li>Frontend integrations</li><li>Impact dashboards</li><li>Admin UI</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>Two production workflows live with clear adoption metrics and administrative controls for governance.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Prioritize lighthouse use cases:</strong> Start with 3 high-impact projects like a Sales Q&A copilot or Support triage agent.</li><li><strong>Build a robust API & integration layer:</strong> Use a gateway for auth, versioning, rate limits, and auditing.</li><li><strong>Implement agentic patterns where justified:</strong> Develop tool catalogs, memory, and human-in-the-loop workflows.</li><li><strong>Design UI for trust and usability:</strong> Include streaming responses, citations with deep links, and feedback buttons.</li><li><strong>Create an impact dashboard:</strong> Instrument events to track KPIs like deflection rate, resolution time, and pipeline lift.</li></ol></div></div></div>
+                        <div id="step-5" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">5. Client Value — Proving ROI & Monetization</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Make value obvious to buyers and operators.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>Baseline metrics</li><li>Cost model</li><li>Pricing strategy</li><li>Customer cohorts</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>ROI calculators</li><li>Executive dashboards</li><li>Case studies</li><li>Pricing/packaging</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>A published ROI narrative with a live dashboard and two validated customer case studies.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Establish baseline & targets:</strong> Measure pre-AI benchmarks for cycle time, error rates, CSAT, etc.</li><li><strong>Design controlled experiments:</strong> Use control vs. treatment groups to scientifically prove impact.</li><li><strong>Implement Costing & FinOps:</strong> Track unit economics per feature (tokens, retrievals, inference) and set budgets.</li><li><strong>Develop value-based pricing & packaging:</strong> Create tiers based on usage, controls, and SLAs.</li><li><strong>Tell the story with evidence:</strong> Use executive scorecards, weekly wins, and quantified case studies.</li></ol></div></div></div>
+                        <div id="step-6" class="card rounded-lg overflow-hidden"><button class="accordion-toggle w-full text-left p-6 flex justify-between items-center"><h3 class="text-2xl font-semibold text-gray-800">6. The Feedback Loop — From Interaction to Intelligence</h3><span class="text-2xl transform transition-transform duration-300">▼</span></button><div class="accordion-content"><div class="p-6 border-t border-gray-200"><p class="mb-6 font-medium">Objective: Systematically capture user feedback and interactions to create a self-improving AI ecosystem.</p><div class="grid md:grid-cols-3 gap-6"><div><h4 class="font-bold text-lg mb-2">Inputs</h4><ul class="list-disc list-inside space-y-1"><li>User feedback (ratings, corrections)</li><li>Implicit signals (clicks, ignores)</li><li>Application telemetry</li></ul></div><div><h4 class="font-bold text-lg mb-2">Outputs</h4><ul class="list-disc list-inside space-y-1"><li>Curated feedback datasets</li><li>New model evaluation sets</li><li>Re-ranking signals</li><li>Data source error reports</li></ul></div><div><h4 class="font-bold text-lg mb-2">Definition of Done</h4><p>A fully automated pipeline exists to ingest, process, and serve user feedback data back to the curation and AI engine layers.</p></div></div><h4 class="font-bold text-lg mt-6 mb-2">Key Steps</h4><ol class="list-decimal list-inside space-y-2"><li><strong>Instrument Applications for Feedback:</strong> Embed explicit (e.g., thumbs up/down, correction boxes) and implicit (e.g., session abandonment) feedback mechanisms.</li><li><strong>Ingest Feedback as a New Source:</strong> Treat user feedback as a high-value data stream and pipe it into the Bronze layer with its own data contract.</li><li><strong>Curate and Aggregate Feedback:</strong> In the Silver/Gold layers, process feedback to identify trends, such as frequently downvoted answers or misidentified data.</li><li><strong>Route Insights for Action:</strong> Feed curated feedback to appropriate teams. Poor ratings might trigger a model re-evaluation, while data corrections could flag issues in an upstream source system.</li><li><strong>Automate System Improvement:</strong> Use the feedback data to automatically generate new "golden" evaluation sets, fine-tune models, or adjust the re-ranking logic in the RAG pipeline.</li></ol></div></div></div>
+                    </div>
+                </section>
+
+                <section id="visuals" class="mb-20">
+                    <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Visualizing the Architecture Stages</h2>
+                    <div class="space-y-16">
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 1: Data Sources & Onboarding</h3><div class="flex flex-col md:flex-row items-center justify-center gap-8"><div class="flex flex-col items-center space-y-2"><div class="flex space-x-4"><div class="text-center"><div class="text-4xl">🗄️</div><p class="text-sm">Internal DB</p></div><div class="text-center"><div class="text-4xl">📄</div><p class="text-sm">Files</p></div><div class="text-center"><div class="text-4xl">🌐</div><p class="text-sm">APIs</p></div></div><p class="font-semibold">Diverse Sources</p></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="text-center"><div class="w-48 h-24 bg-teal-50 border-2 border-teal-500 rounded-lg flex items-center justify-center p-4"><p class="font-bold text-teal-800">Ingestion Pipelines (ADF, Event Hubs)</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="text-center"><div class="w-48 h-24 bg-yellow-50 border-2 border-dashed border-yellow-600 rounded-lg flex items-center justify-center p-4"><p class="font-bold text-yellow-800">Bronze Layer (Raw Data)</p></div></div></div></div>
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 2: Data Curation & Enrichment</h3><div class="flex flex-col md:flex-row items-center justify-center gap-6"><div class="text-center"><div class="w-32 h-20 bg-yellow-50 border-2 border-dashed border-yellow-600 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-yellow-800 text-sm">Bronze</p></div></div><div class="text-4xl text-gray-400">→</div><div class="text-center"><div class="text-5xl">🛠️</div><p class="text-sm font-semibold">Clean & Conform</p></div><div class="text-4xl text-gray-400">→</div><div class="text-center"><div class="w-32 h-20 bg-blue-50 border-2 border-blue-500 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-blue-800 text-sm">Silver</p></div></div><div class="text-4xl text-gray-400">→</div><div class="text-center"><div class="text-5xl">📊</div><p class="text-sm font-semibold">Aggregate</p></div><div class="text-4xl text-gray-400">→</div><div class="text-center"><div class="w-32 h-20 bg-green-50 border-2 border-green-600 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-green-800 text-sm">Gold</p></div></div></div></div>
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 3: AI Engines</h3><div class="flex flex-col md:flex-row items-center justify-center gap-8"><div class="flex flex-col items-center space-y-2"><div class="w-32 h-20 bg-green-50 border-2 border-green-600 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-green-800 text-sm">Gold Data</p></div><div class="w-32 h-20 bg-indigo-50 border-2 border-indigo-500 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-indigo-800 text-sm">Knowledge Store</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="text-center"><div class="w-48 h-32 bg-gray-100 border-2 border-gray-800 rounded-lg flex flex-col items-center justify-center p-4"><div class="text-4xl">🧠</div><p class="font-bold text-gray-800 mt-2">AI Models (LLM/RAG, ML)</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="flex flex-col items-center space-y-2"><div class="w-32 h-20 bg-red-50 border-2 border-red-500 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-red-800 text-sm">Predictions</p></div><div class="w-32 h-20 bg-purple-50 border-2 border-purple-500 rounded-lg flex items-center justify-center p-2"><p class="font-bold text-purple-800 text-sm">Grounded Answers</p></div></div></div></div>
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 4: Applications</h3><div class="flex flex-col md:flex-row items-center justify-center gap-8"><div class="text-center"><div class="w-40 h-24 bg-gray-100 border-2 border-gray-800 rounded-lg flex flex-col items-center justify-center p-4"><div class="text-4xl">🧠</div><p class="font-bold text-gray-800 text-sm mt-1">AI Engine</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="text-center"><div class="w-40 h-24 bg-gray-100 border-2 border-gray-400 rounded-lg flex items-center justify-center p-4"><p class="font-bold text-gray-600">API Gateway</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="flex items-center space-x-4"><div class="text-center"><div class="text-5xl">🤖</div><p class="text-sm font-semibold">AI Agents</p></div><div class="text-center"><div class="text-5xl">🖥️</div><p class="text-sm font-semibold">Dashboards</p></div><div class="text-center"><div class="text-5xl">⚙️</div><p class="text-sm font-semibold">External APIs</p></div></div></div></div>
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 5: Client Value</h3><div class="flex flex-col md:flex-row items-center justify-center gap-8"><div class="flex items-center space-x-4"><div class="text-center"><div class="text-5xl">🤖</div><p class="text-sm font-semibold">AI Agents</p></div><div class="text-center"><div class="text-5xl">🖥️</div><p class="text-sm font-semibold">Dashboards</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="text-center"><div class="w-40 h-24 bg-gray-100 border-2 border-gray-400 rounded-lg flex items-center justify-center p-4"><p class="font-bold text-gray-600">Business Impact</p></div></div><div class="text-5xl text-teal-500 font-sans mx-4">→</div><div class="flex items-center space-x-4"><div class="text-center"><div class="text-5xl">📈</div><p class="text-sm font-semibold">KPI Gains</p></div><div class="text-center"><div class="text-5xl">💰</div><p class="text-sm font-semibold">Revenue</p></div><div class="text-center"><div class="text-5xl">🏆</div><p class="text-sm font-semibold">Advantage</p></div></div></div></div>
+                        <div class="card p-8 rounded-lg"><h3 class="text-2xl font-semibold text-gray-800 mb-4">Stage 6: The Feedback Loop</h3><div class="flex flex-col md:flex-row items-center justify-center gap-8"><div class="flex items-center space-x-4"><div class="text-center"><div class="text-5xl">🤖</div><p class="text-sm font-semibold">AI Agents</p></div><div class="text-center"><div class="text-5xl">🖥️</div><p class="text-sm font-semibold">Dashboards</p></div></div><div class="text-center"><div class="text-5xl text-red-500 font-sans mx-4">→</div><p class="text-sm font-semibold">Feedback (👍/👎)</p></div><div class="text-center"><div class="w-48 h-24 bg-yellow-50 border-2 border-dashed border-yellow-600 rounded-lg flex items-center justify-center p-4"><p class="font-bold text-yellow-800">Back to Bronze Layer</p></div></div></div><p class="text-center mt-4 text-gray-600">User interactions are captured and fed back into the start of the pipeline, creating a cycle of continuous improvement.</p></div>
+                    </div>
+                </section>
+                
+                <section id="antipatterns" class="mb-20">
+                    <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Anti-Patterns & How to Fix Them</h2>
+                    <div class="max-w-4xl mx-auto space-y-6">
+                        <div class="card p-6 rounded-lg flex items-start"><div class="text-3xl mr-4">🚫</div><div><h3 class="text-xl font-semibold text-gray-800">Model-first without data readiness</h3><p class="text-gray-600 mt-1"><strong class="text-teal-600">Fix:</strong> Enforce the Bronze→Silver→Gold quality gates. No shortcuts.</p></div></div>
+                        <div class="card p-6 rounded-lg flex items-start"><div class="text-3xl mr-4">🚫</div><div><h3 class="text-xl font-semibold text-gray-800">Single search method RAG</h3><p class="text-gray-600 mt-1"><strong class="text-teal-600">Fix:</strong> Add hybrid retrieval (vector + keyword) and a reranker. Expect a 10–25% lift in relevance.</p></div></div>
+                        <div class="card p-6 rounded-lg flex items-start"><div class="text-3xl mr-4">🚫</div><div><h3 class="text-xl font-semibold text-gray-800">No lineage or citations</h3><p class="text-gray-600 mt-1"><strong class="text-teal-600">Fix:</strong> Block production deployment until every answer can be traced back to its source documents.</p></div></div>
+                        <div class="card p-6 rounded-lg flex items-start"><div class="text-3xl mr-4">🚫</div><div><h3 class="text-xl font-semibold text-gray-800">Unbounded costs</h3><p class="text-gray-600 mt-1"><strong class="text-teal-600">Fix:</strong> Implement per-tenant budgets, aggressive semantic caching, and throttles.</p></div></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab Content: KFONE Integration -->
+            <div id="kfone-content" class="tab-panel hidden">
+                <section class="text-center mb-12">
+                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">AI Platform + KFONE Integration</h1>
+                     <p class="text-lg text-gray-600 max-w-3xl mx-auto">This section outlines the responsibilities and integration points between the AI Platform and the foundational KF-ONE infrastructure.</p>
+                </section>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Cloud Infrastructure</h3>
+                        <table class="w-full text-left">
+                            <thead><tr class="border-b"><th class="py-2">Component</th><th class="py-2 text-center">KF-ONE</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b"><td class="py-2">Containerization</td><td class="py-2 text-center text-2xl text-green-500">✓</td></tr>
+                                <tr class="border-b"><td class="py-2">Container Orchestration</td><td class="py-2 text-center text-2xl text-green-500">✓</td></tr>
+                                <tr><td class="py-2">Data Platform</td><td class="py-2 text-center text-2xl text-green-500">✓</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Development/Training</h3>
+                        <table class="w-full text-left">
+                            <thead><tr class="border-b"><th class="py-2">Component</th><th class="py-2 text-center">KF-ONE</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b"><td class="py-2">Model Training Frameworks</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                                <tr class="border-b"><td class="py-2">Agent Frameworks</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                                <tr><td class="py-2">MLOps Tools</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Deployment & Serving</h3>
+                        <table class="w-full text-left">
+                            <thead><tr class="border-b"><th class="py-2">Component</th><th class="py-2 text-center">KF-ONE</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b"><td class="py-2">MLOps Orchestration</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                                <tr class="border-b"><td class="py-2">Containerized Inference Servers</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                                <tr><td class="py-2">API Gateways / Service Meshes</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Monitoring, Governance & Security</h3>
+                        <table class="w-full text-left">
+                            <thead><tr class="border-b"><th class="py-2">Component</th><th class="py-2 text-center">KF-ONE</th></tr></thead>
+                            <tbody>
+                                <tr class="border-b"><td class="py-2">Monitoring & Logging</td><td class="py-2 text-center text-2xl text-green-500">✓</td></tr>
+                                <tr class="border-b"><td class="py-2">Model Monitoring</td><td class="py-2 text-center text-2xl text-red-500">✗</td></tr>
+                                <tr><td class="py-2">Security & Compliance</td><td class="py-2 text-center text-2xl text-green-500">✓</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Launch Roadmap -->
+            <div id="roadmap-content" class="tab-panel hidden bg-gray-100 text-gray-800">
+                <div class="container mx-auto p-4 md:p-8">
+                    <header class="text-center mb-12">
+                        <h1 class="text-4xl md:text-5xl font-bold text-[#004AAD] mb-4">Roadmap to Launch AI Platform</h1>
+                        <p class="text-lg text-gray-600 max-w-3xl mx-auto">A strategic, phased approach to building and scaling a revenue-generating AI ecosystem, from a solid foundation to full market availability.</p>
+                    </header>
+                    <main class="space-y-16">
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 1: The Foundation</h2>
+                            <p class="text-center text-gray-600 mb-8">This initial phase is about building the secure, scalable core of the platform. We visualize this as a layered cake, establishing a wide, solid base for all future development.</p>
+                            <div class="max-w-2xl mx-auto">
+                                <div class="layer-cake-base text-center">
+                                    <h3 class="text-xl font-semibold">Data Platform</h3>
+                                    <p class="text-sm opacity-90">Setting up data ingestion, governance, and storage.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 2: AI Platform-as-a-Service</h2>
+                            <p class="text-center text-gray-600 mb-8">This initial phase is about building the secure, scalable core of the platform. We visualize this as a layered cake, establishing a wide, solid base for all future development.</p>
+                            <div class="max-w-2xl mx-auto">
+                                <div class="layer-cake-top text-center">
+                                    <h3 class="text-lg font-semibold">AI Platform POC</h3>
+                                    <p class="text-xs opacity-90">Initial, small-scale Agentic AI platform build.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 3: The Foundation</h2>
+                            <p class="text-center text-gray-600 mb-8">This initial phase is about building the secure, scalable core of the platform. We visualize this as a layered cake, establishing a wide, solid base for all future development.</p>
+                            <div class="max-w-2xl mx-auto">
+                                <div class="layer-cake-base text-center">
+                                    <h3 class="text-xl font-semibold">Data Platform</h3>
+                                    <p class="text-m opacity-90">Setting up data ingestion, governance, and storage.</p>
+                                </div>
+                                <div class="layer-cake-top text-center">
+                                    <h3 class="text-lg font-semibold">AI Platform POC</h3>
+                                    <p class="text-sm opacity-90">Initial, small-scale AI platform build.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section id="kf1_platform" class="bg-white rounded-lg shadow-md p-4 md:p-4 text-center">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2">Phase 4: KF-ONE PLATFORM</h2>
+                            <div class="max-w-xl mx-auto mt-6">
+                                <div class="layer-cake-top text-center bg-green-500 w-3/4">
+                                    <h3 class="text-lg font-semibold">KF-ONE PLATFORM</h3>
+                                    <p class="text-xs opacity-90">Host applications across Korn Ferry.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 5: The Merge</h2>
+                            <p class="text-center text-gray-600 mb-8">This initial phase is about building the secure, scalable core of the platform. We visualize this as a layered cake, establishing a wide, solid base for all future development.</p>
+                            <div class="max-w-2xl mx-auto">
+                                <div class="layer-cake-base text-center">
+                                    <h3 class="text-xl font-semibold">Data Platform</h3>
+                                    <p class="text-m opacity-90">Setting up data ingestion, governance, and storage.</p>
+                                </div>
+                                <div></div>
+                                <div class="layer-cake-top text-center">
+                                    <h3 class="text-lg font-semibold">AI Platform POC</h3>
+                                    <p class="text-sm opacity-90">Initial, small-scale AI platform build.</p>
+                                </div>
+                                <div class="max-w-xl mx-auto mt-6">
+                                    <div class="layer-cake-top text-center bg-green-500 w-3/4">
+                                        <h3 class="text-lg font-semibold">KF-ONE PLATFORM</h3>
+                                        <p class="text-xs opacity-90">Host applications across Korn Ferry.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 6: Expansion & Validation</h2>
+                            <p class="text-center text-gray-600 mb-12">With a solid base, we move to a sequential launch process. This timeline illustrates our controlled rollout, gathering feedback and iterating at each stage to ensure product-market fit.</p>
+                            <div class="max-w-3xl mx-auto">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <h3 class="text-xl font-semibold text-[#008DDA]">MVP Launch</h3>
+                                    <p class="text-gray-600">Launch a single, functional AI agent to a focused pilot group to prove initial value and gather critical performance data.</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <h3 class="text-xl font-semibold text-[#008DDA]">Alpha Launch</h3>
+                                    <p class="text-gray-600">Share the platform with a small group of internal power-users to identify bugs, refine features, and test usability in a controlled environment.</p>
+                                </div>
+                                <div class="timeline-item" style="border-left: 4px solid transparent;">
+                                    <div class="timeline-dot"></div>
+                                    <h3 class="text-xl font-semibold text-[#008DDA]">Beta Launch</h3>
+                                    <p class="text-gray-600">Conduct a wider, yet still controlled, internal release to test scalability, gather broader feedback, and prepare for general availability.</p>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="flow-arrow">&#8595;</div>
+                        <section class="bg-white rounded-lg shadow-md p-6 md:p-8">
+                            <h2 class="text-3xl font-bold text-[#004AAD] mb-2 text-center">Phase 7: Scale & Monetization</h2>
+                            <p class="text-center text-gray-600 mb-8">The final phase represents the platform's full readiness for enterprise-wide use and the strategic shift towards commercialization and revenue generation.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div class="text-center">
+                                    <h3 class="text-2xl font-semibold text-[#008DDA] mb-4">General Availability</h3>
+                                    <p class="text-7xl font-bold text-[#004AAD]">GA</p>
+                                    <p class="text-gray-600 mt-4">The platform is officially launched and available for enterprise-wide use, marking a major milestone in our AI strategy.</p>
+                                </div>
+                                <div class="roadmap-chart-container">
+                                    <canvas id="monetizationChart"></canvas>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+                    <footer class="text-center mt-16 text-gray-500 text-sm">
+                        <p>AI Platform Strategic Roadmap | Driving Innovation and Business Value</p>
+                    </footer>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Execution Timeline -->
+            <div id="timeline-content" class="tab-panel hidden">
+                <section id="timeline" class="mb-20">
+                    <h2 class="text-4xl font-bold text-center text-gray-800 mb-6">Execution Timeline (A 6-Month Roadmap)</h2>
+                    <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-12">A realistic two-quarter plan to move from foundation to a scalable, optimized platform, delivering value incrementally at each stage.</p>
+                    <div class="container mx-auto w-full h-full">
+                        <div class="relative wrap overflow-hidden p-4 md:p-10 h-full">
+                            <div class="border-2-2 absolute border-opacity-20 border-teal-700 h-full border-2" style="left: 50%"></div>
+                            
+                            <!-- Quarter 1 -->
+                            <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-20 h-8 rounded-full">
+                                    <h1 class="mx-auto font-semibold text-sm text-white">Quarter 1</h1>
+                                </div>
+                                <div class="order-1 w-5/12"></div>
+                            </div>
+                            <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-12 h-12 rounded-full"><h1 class="mx-auto font-semibold text-lg text-white">M1-2</h1></div>
+                                <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4"><h3 class="font-bold text-xl mb-3 text-gray-800">Foundation & Planning</h3><ul class="space-y-2 text-sm text-gray-600"><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Finalize 2-3 lighthouse use cases, owners, and KPIs.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Core infrastructure setup (Data Lake, Databricks, Purview).</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Ingest Top 5 sources to Bronze with data contracts.</span></li></ul></div>
+                            </div>
+                            <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-12 h-12 rounded-full"><h1 class="mx-auto text-white font-semibold text-lg">M3</h1></div>
+                                <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4"><h3 class="font-bold text-xl mb-3 text-gray-800">First Value & MVP</h3><ul class="space-y-2 text-sm text-gray-600"><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Develop Silver/Gold layers for first use case.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Build and evaluate a robust RAG POC.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Deploy first agent/API v1 for internal review.</span></li></ul></div>
+                            </div>
+
+                            <!-- Quarter 2 -->
+                             <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-gray-800 shadow-xl w-20 h-8 rounded-full">
+                                    <h1 class="mx-auto font-semibold text-sm text-white">Quarter 2</h1>
+                                </div>
+                                <div class="order-1 w-5/12"></div>
+                            </div>
+                            <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-12 h-12 rounded-full"><h1 class="mx-auto text-white font-semibold text-lg">M4</h1></div>
+                                <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4"><h3 class="font-bold text-xl mb-3 text-gray-800">Pilot & Feedback</h3><ul class="space-y-2 text-sm text-gray-600"><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Pilot first agent with a champion user group.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Instrument and launch impact dashboard v1.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Begin ingesting user feedback data into Bronze.</span></li></ul></div>
+                            </div>
+                            <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-12 h-12 rounded-full"><h1 class="mx-auto font-semibold text-lg text-white">M5</h1></div>
+                                <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4"><h3 class="font-bold text-xl mb-3 text-gray-800">Expansion</h3><ul class="space-y-2 text-sm text-gray-600"><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Begin development on second and third use cases.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Enhance RAG with rerankers based on feedback.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Launch formal A/B tests with a control group.</span></li></ul></div>
+                            </div>
+                            <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                                <div class="order-1 w-5/12"></div>
+                                <div class="z-20 flex items-center order-1 bg-teal-600 shadow-xl w-12 h-12 rounded-full"><h1 class="mx-auto text-white font-semibold text-lg">M6</h1></div>
+                                <div class="order-1 card rounded-lg shadow-xl w-5/12 px-6 py-4"><h3 class="font-bold text-xl mb-3 text-gray-800">Harden & Prove ROI</h3><ul class="space-y-2 text-sm text-gray-600"><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>SRE hardening: autoscale, circuit breakers, DR test.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Implement cost budgets and FinOps reports.</span></li><li class="flex items-start"><span class="text-teal-500 font-bold mr-2 mt-1">✓</span><span>Finalize and present ROI model with case studies.</span></li></ul></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 AI Platform Strategy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const targetTab = button.getAttribute('data-tab');
+
+                    tabPanels.forEach(panel => {
+                        if (panel.id === `${targetTab}-content`) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Accordion functionality
+            const accordionToggles = document.querySelectorAll('.accordion-toggle');
+            accordionToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const content = toggle.nextElementSibling;
+                    const icon = toggle.querySelector('span');
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        accordionToggles.forEach(otherToggle => {
+                            otherToggle.nextElementSibling.style.maxHeight = null;
+                            otherToggle.querySelector('span').style.transform = 'rotate(0deg)';
+                        });
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // Flow node click to scroll and open accordion
+            const flowNodes = document.querySelectorAll('.flow-node');
+            flowNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    const targetId = node.dataset.target;
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const toggle = targetElement.querySelector('.accordion-toggle');
+                        const content = toggle.nextElementSibling;
+                        const icon = toggle.querySelector('span');
+                        accordionToggles.forEach(otherToggle => {
+                            otherToggle.nextElementSibling.style.maxHeight = null;
+                            otherToggle.querySelector('span').style.transform = 'rotate(0deg)';
+                        });
+                        if (!content.style.maxHeight) {
+                           setTimeout(() => {
+                             content.style.maxHeight = content.scrollHeight + 'px';
+                             icon.style.transform = 'rotate(180deg)';
+                           }, 500);
+                        }
+                    }
+                });
+            });
+
+            // Roadmap Chart
+            const monetizationCtx = document.getElementById('monetizationChart').getContext('2d');
+            new Chart(monetizationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Platform-as-a-Service (PaaS)', 'Solution-as-a-Service (SaaS)', 'Ecosystem & Partnerships'],
+                    datasets: [{
+                        label: 'Monetization Strategy',
+                        data: [45, 35, 20],
+                        backgroundColor: ['#004AAD', '#008DDA', '#41C9E2'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#374151', font: { size: 14 } } },
+                        title: { display: true, text: 'Monetization Strategy Breakdown', color: '#004AAD', font: { size: 18, weight: 'bold' } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    return Array.isArray(label) ? label.join(' ') : label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
