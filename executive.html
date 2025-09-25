@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Platform Strategy Playbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Executive Blue & Slate" - A sophisticated palette with a light gray background, dark slate for text, and a strong, confident blue for accents and calls to action. -->
+    <!-- Application Structure Plan: The application is designed as a vertical, single-page journey that mirrors the report's step-by-step playbook. A sticky navigation bar allows users to jump between the core stages (Principles, The Playbook, Timeline, etc.). The playbook itself is the main focus, presented as a series of expandable, interactive sections. This linear, guided-path structure was chosen because the source material is a process-oriented playbook. It makes the complex workflow easy to follow, allowing users to drill into the details of each stage without losing their place in the overall architecture. Key interactions include clicking on a stage to reveal its detailed steps, inputs, outputs, and hovering over key terms for tooltips. -->
+    <!-- Visualization & Content Choices: 
+        - Executive Summary: Report Info -> Problem, Solution, Impact. Goal -> Inform. Viz -> Key metric cards and lists. Interaction -> Static. Justification -> Provides a quick, high-level overview for executive audiences. Method -> HTML/Tailwind.
+        - North Star: Report Info -> External/Internal goals. Goal -> Inform. Viz -> Icon-based cards in a two-column layout. Interaction -> Static. Juststation -> Clearly separates customer-facing and internal strategic goals, providing a high-level vision. Method -> HTML/Tailwind.
+        - Scars from Past: Report Info -> List of traps and positive mindsets. Goal -> Inform. Viz -> Icon-based list. Interaction -> Static. Justification -> Clearly lists lessons learned from past experiences. Method -> HTML/Tailwind.
+        - Strategic Impact Matrix: Report Info -> Interpretation of "Scars" content. Goal -> Organize/Analyze. Viz -> 2x2 matrix. Interaction -> Static. Justification -> Provides a strategic framework for prioritizing actions and avoiding common pitfalls based on their impact and effort. Method -> HTML/Tailwind.
+        - Platform Definition: Report Info -> What a platform is and is not. Goal -> Inform. Viz -> Two-column list. Interaction -> Static. Justification -> Provides a clear, foundational definition of the platform concept. Method -> HTML/Tailwind.
+        - What I Need to Deliver: Report Info -> Team and project requirements. Goal -> Inform/Organize. Viz -> Step-by-step list and team breakdown. Interaction -> Static. Justification -> Clearly outlines the resources and plan needed for execution. Method -> HTML/Tailwind.
+        - Guiding Principles: Report Info -> 6 core principles. Goal -> Inform. Viz -> Icon-based cards. Interaction -> Static display. Justification -> Icons provide quick visual cues for each principle, making them memorable. Method -> HTML/Tailwind.
+        - Architecture Flow: Report Info -> 6 main stages of the D2V pipeline including feedback loop. Goal -> Organize/Change. Viz -> A horizontal, connected-node diagram. Interaction -> Clicking a node scrolls to the relevant playbook section. Justification -> A visual flowchart is the most intuitive way to represent a multi-stage process. Method -> HTML/Tailwind.
+        - Playbook Steps: Report Info -> Detailed steps, inputs, outputs, DoD for each stage. Goal -> Inform/Organize. Viz -> Expandable accordion-style sections. Interaction -> Click to expand/collapse. Justification -> Hides complexity by default, allowing users to focus on one stage at a time and drill down as needed. Method -> HTML/JS.
+        - Pictorial Representations: Report Info -> The core concepts of each of the 6 stages. Goal -> Inform/Organize. Viz -> Simplified diagrams using HTML/CSS. Interaction -> Static. Justification -> Provides a quick, high-level visual summary of what happens in each stage, reinforcing the concepts from the detailed playbook. Method -> HTML/Tailwind.
+        - Execution Timeline: Report Info -> Phased 6-month execution plan. Goal -> Change. Viz -> A vertical timeline flow. Interaction -> Static display. Justification -> Clearly visualizes a realistic chronological progression and key deliverables over two quarters. Method -> HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; 
+            color: #343a40; 
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-panel {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .tab-button.active {
+            color: #005f73; 
+            border-bottom-color: #005f73;
+            font-weight: 700;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #dee2e6;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+        }
+        .timeline-graphic-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .timeline-graphic-item:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -2.5rem;
+            top: 1.5rem;
+            font-size: 2rem;
+            color: #adb5bd;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 md:px-6 py-8">
+        <!-- Header & Navigation -->
+        <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 mb-12">
+            <nav class="container mx-auto px-4">
+                <div class="flex items-center justify-center flex-wrap gap-x-2 md:gap-x-4">
+                    <button data-tab="summary" class="tab-button text-xs md:text-base active">Summary</button>
+                    <button data-tab="why-now" class="tab-button text-xs md:text-base">Why Now?</button>
+                    <button data-tab="pain-points" class="tab-button text-xs md:text-base">Pain Points</button>
+                    <button data-tab="vision" class="tab-button text-xs md:text-base">Vision & Strategy</button>
+                    <button data-tab="value" class="tab-button text-xs md:text-base">Business Value</button>
+                    <button data-tab="roadmap" class="tab-button text-xs md:text-base">Roadmap</button>
+                    <button data-tab="financials" class="tab-button text-xs md:text-base">Financials & ROI</button>
+                    <button data-tab="risks" class="tab-button text-xs md:text-base">Risks & Mitigation</button>
+                    <button data-tab="edge" class="tab-button text-xs md:text-base">Competitive Edge</button>
+                    <button data-tab="ask" class="tab-button text-xs md:text-base">Call to Action</button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Tab Content: Summary -->
+            <div id="summary-content" class="tab-panel">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">AI & Data Platform:</h1>
+                    <h2 class="text-3xl md:text-4xl font-semibold text-[#005f73] mt-2">Driving Business Value through Intelligence & Scale</h2>
+                    <p class="mt-6 text-xl text-gray-700 max-w-3xl mx-auto">
+                        This is a strategic proposal for a unified Data and AI platform, designed to accelerate innovation and deliver measurable business outcomes by turning our data assets into intelligent, revenue-generating products.
+                    </p>
+                </div>
+                <div class="mt-12 max-w-5xl mx-auto">
+                    <div class="card p-8 rounded-xl">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center text-center">
+                            <div class="timeline-graphic-item">
+                                <div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center">
+                                    <span class="text-4xl">📊</span>
+                                </div>
+                                <h3 class="mt-4 font-bold text-lg">Data</h3>
+                                <p class="text-sm text-gray-600">Unify siloed data into a trustworthy asset.</p>
+                            </div>
+                            <div class="timeline-graphic-item">
+                                <div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center">
+                                    <span class="text-4xl">🤖</span>
+                                </div>
+                                <h3 class="mt-4 font-bold text-lg">AI</h3>
+                                <p class="text-sm text-gray-600">Build intelligent agents and copilots.</p>
+                            </div>
+                            <div class="timeline-graphic-item">
+                                <div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center">
+                                    <span class="text-4xl">💰</span>
+                                </div>
+                                <h3 class="mt-4 font-bold text-lg">Value</h3>
+                                <p class="text-sm text-gray-600">Drive revenue, savings, and compliance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Why Now? -->
+            <div id="why-now-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">The Urgency: Why We Must Act Now</h1>
+                </div>
+                <div class="mt-12 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">📈</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Industry Acceleration</h3>
+                        <p class="text-gray-600">Generative AI adoption is exploding across every industry. The foundational requirement for success is a robust, scalable data infrastructure. We are at a critical inflection point.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">🏃‍♂️</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Competitive Pressure</h3>
+                        <p class="text-gray-600">Our competitors are not standing still. They are actively launching AI-powered features. Delaying action means risking market share and falling behind on innovation.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">⚖️</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Growth & Compliance</h3>
+                        <p class="text-gray-600">As we scale, managing our data for both growth and regulatory compliance becomes exponentially more complex. A unified platform is the only sustainable way to manage this challenge.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Pain Points -->
+            <div id="pain-points-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Current State: Our Primary Pain Points</h1>
+                </div>
+                <div class="mt-12 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="card p-8 rounded-xl text-center border-t-4 border-red-500">
+                        <span class="text-6xl">🐌</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Slow Experimentation</h3>
+                        <p class="text-gray-600">Data silos, duplication, and manual reporting create a bottleneck, slowing down AI experimentation and product deployment from months to weeks.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center border-t-4 border-red-500">
+                        <span class="text-6xl">🧩</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Inconsistent Architecture</h3>
+                        <p class="text-gray-600">Without a central platform, teams build bespoke, non-reusable solutions, leading to technical debt, high maintenance costs, and inconsistent user experiences.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center border-t-4 border-red-500">
+                        <span class="text-6xl">📜</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Compliance & Security Risks</h3>
+                        <p class="text-gray-600">A fragmented data landscape makes it difficult to enforce consistent governance, security, and compliance (GDPR, SOC2), exposing the business to significant risk.</p>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Tab Content: Vision & Strategy -->
+            <div id="vision-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Our Vision & Strategy</h1>
+                     <p class="mt-6 text-xl text-gray-700 max-w-3xl mx-auto">
+                        To build a unified Data and AI Platform that serves as the central nervous system for intelligence across the organization, directly aligned with our core business objectives.
+                    </p>
+                </div>
+                <div class="mt-12">
+                    <div class="card p-8 rounded-xl">
+                        <h3 class="text-2xl font-bold text-center mb-8">The End-to-End Flow</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-center text-center">
+                            <div class="timeline-graphic-item"><div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center"><span class="text-4xl">📁</span></div><h3 class="mt-4 font-bold text-lg">Data Sources</h3></div>
+                            <div class="timeline-graphic-item"><div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center"><span class="text-4xl">🏗️</span></div><h3 class="mt-4 font-bold text-lg">Data Platform</h3></div>
+                            <div class="timeline-graphic-item"><div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center"><span class="text-4xl">🧠</span></div><h3 class="mt-4 font-bold text-lg">AI Engines</h3></div>
+                            <div class="timeline-graphic-item"><div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center"><span class="text-4xl">🚀</span></div><h3 class="mt-4 font-bold text-lg">Applications</h3></div>
+                            <div class="timeline-graphic-item"><div class="bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center"><span class="text-4xl">📈</span></div><h3 class="mt-4 font-bold text-lg">Business Value</h3></div>
+                        </div>
+                    </div>
+                    <div class="card p-8 rounded-xl mt-8">
+                         <h3 class="text-2xl font-bold text-center mb-4">Alignment with Company OKRs</h3>
+                         <div class="grid md:grid-cols-3 gap-8 text-center">
+                            <div><p class="text-2xl font-bold text-[#005f73]">Growth</p><p>Enable new AI-powered products and features.</p></div>
+                            <div><p class="text-2xl font-bold text-[#005f73]">Efficiency</p><p>Automate internal processes and workflows.</p></div>
+                            <div><p class="text-2xl font-bold text-[#005f73]">Compliance</p><p>Ensure robust data governance and security.</p></div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Business Value -->
+            <div id="value-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Measurable Business Impact</h1>
+                </div>
+                <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card p-8 rounded-xl text-center"><span class="text-6xl">💡</span><h3 class="text-2xl font-bold mt-4 mb-2">Faster Insights</h3><p class="text-gray-600">Deliver real-time dashboards and insights, reducing decision-making time by <span class="font-bold">3x</span>.</p></div>
+                    <div class="card p-8 rounded-xl text-center"><span class="text-6xl">💸</span><h3 class="text-2xl font-bold mt-4 mb-2">Cost Savings</h3><p class="text-gray-600">Automate manual processes and optimize infrastructure, projecting <span class="font-bold">$2M/year</span> in savings.</p></div>
+                    <div class="card p-8 rounded-xl text-center"><span class="text-6xl">🚀</span><h3 class="text-2xl font-bold mt-4 mb-2">Revenue Lift</h3><p class="text-gray-600">Enhance customer experiences with AI-powered features, driving retention and upsell opportunities.</p></div>
+                    <div class="card p-8 rounded-xl text-center"><span class="text-6xl">✅</span><h3 class="text-2xl font-bold mt-4 mb-2">Compliance Ready</h3><p class="text-gray-600">Build a foundation that is secure and ready for GDPR, HIPAA, and SOC2 compliance from day one.</p></div>
+                </div>
+            </div>
+
+             <!-- Tab Content: Roadmap -->
+            <div id="roadmap-content" class="tab-panel hidden">
+                <div class="text-center">
+                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Phased Strategic Roadmap</h1>
+                     <p class="text-xl text-gray-600 max-w-3xl mx-auto">An 18-month plan to deliver incremental value, de-risk the investment, and build a scalable, enterprise-grade platform.</p>
+                </div>
+                <div class="mt-16 max-w-6xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between relative">
+                        <div class="absolute top-1/2 w-full h-1 bg-gray-200 hidden md:block" style="transform: translateY(-50%);"></div>
+                        <div class="absolute top-0 w-1 h-full bg-gray-200 left-8 md:hidden"></div>
+                        <!-- Phase 1 -->
+                        <div class="flex md:flex-col items-center mb-8 md:mb-0 relative z-10 w-full md:w-1/3">
+                            <div class="bg-[#005f73] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">1</div>
+                            <div class="ml-6 md:ml-0 md:mt-4 text-left md:text-center">
+                                <h3 class="text-xl font-bold">Foundation (0-6 Months)</h3>
+                                <p class="text-gray-600">Unify data, establish governance, and launch a pilot AI project to prove value.</p>
+                            </div>
+                        </div>
+                        <!-- Phase 2 -->
+                         <div class="flex md:flex-col items-center mb-8 md:mb-0 relative z-10 w-full md:w-1/3">
+                            <div class="bg-[#005f73] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">2</div>
+                            <div class="ml-6 md:ml-0 md:mt-4 text-left md:text-center">
+                                <h3 class="text-xl font-bold">Expansion (6-12 Months)</h3>
+                                <p class="text-gray-600">Launch internal AI copilots, automate key processes, and expand dashboarding.</p>
+                            </div>
+                        </div>
+                        <!-- Phase 3 -->
+                         <div class="flex md:flex-col items-center mb-8 md:mb-0 relative z-10 w-full md:w-1/3">
+                            <div class="bg-[#005f73] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">3</div>
+                            <div class="ml-6 md:ml-0 md:mt-4 text-left md:text-center">
+                                <h3 class="text-xl font-bold">Scale (12-18 Months)</h3>
+                                <p class="text-gray-600">Enable multi-tenancy, explore monetization, and begin global rollout.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Financials & ROI -->
+            <div id="financials-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Financials & Return on Investment</h1>
+                </div>
+                <div class="mt-12 max-w-5xl mx-auto">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="card p-8 rounded-xl">
+                            <h3 class="text-2xl font-bold mb-4">Investment Required</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-lg">Capex (Year 1)</h4>
+                                    <p class="text-gray-600">Initial software, hardware, and setup costs.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg">Opex (Annual)</h4>
+                                    <p class="text-gray-600">Cloud services, licenses, and dedicated personnel.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-8 rounded-xl bg-[#e7f5ff]">
+                            <h3 class="text-2xl font-bold mb-4">3-Year ROI Projection</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-lg text-green-700">Cost Savings: $X Million</h4>
+                                    <p class="text-gray-600">From automation and operational efficiencies.</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg text-green-700">Revenue Uplift: $Y Million</h4>
+                                    <p class="text-gray-600">From new AI-powered products and features.</p>
+                                </div>
+                                 <div>
+                                    <h4 class="font-semibold text-lg text-green-700">Payback Period: Z Months</h4>
+                                    <p class="text-gray-600">The point at which the initial investment is recovered.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Risks & Mitigation -->
+            <div id="risks-content" class="tab-panel hidden">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Risks & Mitigation</h1>
+                </div>
+                <div class="mt-12 max-w-5xl mx-auto space-y-6">
+                    <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold">Data Privacy & Security</h3>
+                        <p class="mt-2 text-gray-600"><strong class="text-[#005f73]">Mitigation:</strong> End-to-end encryption, Role-Based Access Control (RBAC), and implementing a secure-by-design architecture from day one.</p>
+                    </div>
+                     <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold">Vendor Lock-In</h3>
+                        <p class="mt-2 text-gray-600"><strong class="text-[#005f73]">Mitigation:</strong> Prioritize a multi-cloud compatible architecture using open-source standards (like Apache Iceberg and Spark) where possible to ensure portability.</p>
+                    </div>
+                     <div class="card p-6 rounded-lg">
+                        <h3 class="text-xl font-bold">Change Management & Adoption</h3>
+                        <p class="mt-2 text-gray-600"><strong class="text-[#005f73]">Mitigation:</strong> Establish a formal Center of Excellence (CoE), develop a robust training program, and engage a network of internal champions early.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Competitive Edge -->
+            <div id="edge-content" class="tab-panel hidden">
+                 <div class="text-center">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Our Competitive Edge</h1>
+                </div>
+                <div class="mt-12 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">⚡</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Speed to Value</h3>
+                        <p class="text-gray-600">A unified platform will allow us to ship new AI features in weeks, not months, outpacing competitors who rely on project-based, siloed approaches.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">💰</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Lower Total Cost of Ownership</h3>
+                        <p class="text-gray-600">By centralizing infrastructure and using a multi-cloud strategy, we reduce redundant spending and optimize costs more effectively than single-threaded competitors.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl text-center">
+                        <span class="text-6xl">💡</span>
+                        <h3 class="text-2xl font-bold mt-4 mb-2">Innovation Enabler</h3>
+                        <p class="text-gray-600">This platform isn't just about today's AI; it's the foundation for future innovations like autonomous agents and advanced copilots, keeping us ahead of the curve.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Call to Action -->
+            <div id="ask-content" class="tab-panel hidden">
+                <div class="text-center">
+                     <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Decision & Call to Action</h1>
+                </div>
+                 <div class="mt-12 max-w-4xl mx-auto card p-10 rounded-xl text-center bg-[#005f73] text-white">
+                    <h2 class="text-3xl font-bold mb-4">Decision Needed</h2>
+                    <p class="text-xl opacity-90 mb-8">We are seeking executive sponsorship and budget approval to move forward with this strategic initiative.</p>
+                    <h2 class="text-3xl font-bold mb-4">The Ask</h2>
+                    <p class="text-2xl bg-white/20 p-6 rounded-lg">Greenlight the Phase 1 investment to unlock <span class="font-extrabold">$X</span> in projected savings and <span class="font-extrabold">$Y</span> in potential new revenue growth.</p>
+                </div>
+                 <div class="mt-8 max-w-4xl mx-auto text-center">
+                     <h3 class="text-2xl font-bold text-center mb-4 text-gray-700">Future-State Architecture</h3>
+                     <div class="card p-6 rounded-xl">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center text-xs">
+                            <div class="font-bold">Data Sources</div>
+                            <div class="font-bold text-2xl text-gray-300">→</div>
+                            <div class="font-bold">Data Platform</div>
+                            <div class="font-bold text-2xl text-gray-300">→</div>
+                            <div class="font-bold">AI Engines</div>
+                        </div>
+                         <div class="text-center font-bold text-2xl text-gray-300 my-2">↓</div>
+                         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center text-xs">
+                            <div class="font-bold">Business Value</div>
+                             <div class="font-bold text-2xl text-gray-300">←</div>
+                            <div class="font-bold">Applications</div>
+                         </div>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- OLD TABS - HIDDEN BUT PRESERVED FOR REFERENCE -->
+            <div id="playbook-content" class="tab-panel hidden"></div>
+            <div id="kfone-content" class="tab-panel hidden"></div>
+            <div id="roadmap-old-content" class="tab-panel hidden"></div>
+            <div id="timeline-content" class="tab-panel hidden"></div>
+            <div id="cost-content" class="tab-panel hidden"></div>
+            <div id="delivery-content" class="tab-panel hidden"></div>
+            <div id="datalayer-content" class="tab-panel hidden"></div>
+        </main>
+    </div>
+    <footer class="bg-gray-800 text-white py-10 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 AI Platform Strategy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const targetTab = button.getAttribute('data-tab');
+
+                    tabPanels.forEach(panel => {
+                        panel.classList.add('hidden');
+                    });
+                    const activePanel = document.getElementById(`${targetTab}-content`);
+                    if(activePanel) {
+                        activePanel.classList.remove('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
