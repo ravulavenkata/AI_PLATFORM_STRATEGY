@@ -124,6 +124,10 @@
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
+        .pricing-card.popular {
+            border-color: #E97777;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -131,7 +135,8 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800">AI Platform Strategy Playbook</h1>
             <div class="mt-4 text-xs text-gray-500">
-                <p><span class="font-bold text-orange-600">Excerpts:</span> from the presenter's upcoming book.</p>
+                <p><span class="font-bold text-orange-600">Disclaimer:</span> Insights are drawn from years of platform-building experience (Excluding KF1 Platform).</p>
+                <p>Excerpts from the presenter's upcoming book.</p>
             </div>
         </div>
 
@@ -143,12 +148,13 @@
                     <button data-tab="northstar" class="tab-button font-medium text-lg">North Star</button>
                     <button data-tab="scars" class="tab-button font-medium text-lg">Scars from Past</button>
                     <button data-tab="matrix" class="tab-button font-medium text-lg">Strategic Matrix</button>
-                    <button data-tab="platform" class="tab-button font-medium text-lg">Platform</button>                   
+                    <button data-tab="platform" class="tab-button font-medium text-lg">Platform</button>
+                    <button data-tab="delivery" class="tab-button font-medium text-lg">What I Need to Deliver</button>
                     <button data-tab="playbook" class="tab-button font-medium text-lg">D2V Playbook</button>
                     <button data-tab="kfone" class="tab-button font-medium text-lg">KFONE Integration</button>
                     <button data-tab="roadmap" class="tab-button font-medium text-lg">Launch Roadmap</button>
                     <button data-tab="timeline" class="tab-button font-medium text-lg">Execution Timeline</button>
-                     <button data-tab="delivery" class="tab-button font-medium text-lg">What I Need to Deliver</button>
+                    <button data-tab="cost" class="tab-button font-medium text-lg">Cost Model</button>
                 </div>
             </nav>
         </header>
@@ -157,14 +163,14 @@
             <!-- Tab Content: Executive Summary -->
             <div id="summary-content" class="tab-panel">
                 <section class="text-center mb-12">
-                    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">Executive Summary</h1>
+                    <h1 class="text-5xl font-extrabold text-gray-900 mb-4">Executive Summary (30 sec)</h1>
                 </section>
                 <div class="max-w-4xl mx-auto space-y-8">
                     <div class="card p-6 rounded-lg">
-                        <h2 class="text-3xl font-bold text-red-600 mb-4">Challenges</h2>
+                        <h2 class="text-3xl font-bold text-red-600 mb-4">Problem</h2>
                         <ul class="list-disc list-inside space-y-2 text-lg">
                             <li>Teams have no Org-level standardized patterns and flows.</li>
-                            <li>Teams can’t safely and quickly ship AI features that move revenue.</li>
+                            <li>Teams can’t safely AND QUICKLY ship AI FEATURES/PRODUCTS that move revenue.</li>
                         </ul>
                     </div>
                     <div class="card p-6 rounded-lg">
@@ -176,22 +182,21 @@
                         <div class="grid md:grid-cols-3 gap-4 text-center">
                             <div>
                                 <p class="text-4xl font-bold">↓ 92%</p>
-                                <p>Ops Cost Reduction</p>
+                                <p>Cost Reduction</p>
                             </div>
                             <div>
                                 <p class="text-4xl font-bold">↑ 3×</p>
                                 <p>Feature Velocity</p>
                             </div>
                             <div>
-                                <p class="text-4xl font-bold">4 wks → 8 hrs</p>
-                                <p>Onboarding to Insights</p>
+                                <p class="text-4xl font-bold">12 → 4 wks</p>
+                                <p>Time-to-First-Value</p>
                             </div>
                         </div>
                     </div>
-                   
                      <div class="card p-6 rounded-lg">
                         <h2 class="text-3xl font-bold text-teal-600 mb-4">6-Month Outcome</h2>
-                        <p class="text-lg">2 lighthouse AI projects in production with CSAT +15–25% and Ops deflection 10–20%.</p>
+                        <p class="text-lg">2 lighthouse agents in production with CSAT +15–25% and Ops deflection 10–20%.</p>
                     </div>
                     <div class="card p-6 rounded-lg">
                         <h2 class="text-3xl font-bold text-purple-600 mb-4">Prior Wins</h2>
@@ -218,16 +223,17 @@
                         <div class="space-y-8">
                             <div class="card p-6 rounded-lg">
                                 <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">🎯</span>Customer</h3>
-                                <p class="text-lg ml-10">Accelerating customer success.</p>
+                                <p class="text-lg ml-10">Pro-actively help customers achieve their goals.</p>
                             </div>
                             <div class="card p-6 rounded-lg">
                                 <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💎</span>Value</h3>
-                                <p class="text-lg ml-10">AI value in days, not months.</p>
+                                <p class="text-lg ml-10">Unlock significant and measurable business value.</p>
                             </div>
                             <div class="card p-6 rounded-lg">
                                 <h3 class="text-2xl font-semibold text-gray-800 mb-3 flex items-center"><span class="text-3xl mr-4">💰</span>Revenue</h3>
                                 <ul class="list-disc list-inside ml-10 space-y-2 text-lg">
-                                    <li>Deliver measurable outcomes (growth / revenue/ engagement).</li>
+                                    <li>Accelerate existing revenue growth.</li>
+                                    <li>Create new revenue growth opportunities.</li>
                                 </ul>
                             </div>
                         </div>
@@ -797,6 +803,131 @@
                     </div>
                 </section>
             </div>
+
+            <!-- Tab Content: Cost Model -->
+            <div id="cost-content" class="tab-panel hidden">
+                <section class="text-center mb-12">
+                     <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Internal Cost Model (Estimates)</h1>
+                     <p class="text-lg text-gray-600 max-w-3xl mx-auto">An order-of-magnitude estimate for the monthly cloud infrastructure costs to run the AI platform. This is for internal budgeting and does not include personnel costs.</p>
+                </section>
+                <div class="space-y-6 max-w-5xl mx-auto">
+                    <!-- Tier 1: Pilot -->
+                    <div class="card rounded-lg overflow-hidden">
+                        <button class="accordion-toggle w-full text-left p-6 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-4">🚀</span>
+                                <div>
+                                    <h3 class="text-2xl font-semibold text-gray-800">Pilot Tier (50 GB)</h3>
+                                    <p class="text-gray-500">Supports initial development and 1-2 lighthouse projects.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold">Estimated Cost</p>
+                                <p class="text-3xl font-bold text-teal-600">~$1,400 / mo</p>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 border-t border-gray-200 bg-gray-50">
+                                <dl class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="col-span-1 md:col-span-3 font-bold text-lg text-gray-700 pb-2 border-b">Cost & Tech Breakdown</div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Ingestion & Storage</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure Data Factory (small pipelines), Azure Data Lake Storage Gen2.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$350</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Curation</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure Databricks (single, small all-purpose cluster).</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$500</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">AI Engines & Serving</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure AI Search (Basic), Azure OpenAI (Pay-as-you-go), Azure App Service, PostgreSQL for metadata.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$550</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Tier 2: Growth -->
+                    <div class="card rounded-lg overflow-hidden">
+                        <button class="accordion-toggle w-full text-left p-6 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-4">📈</span>
+                                <div>
+                                    <h3 class="text-2xl font-semibold text-gray-800">Growth Tier (100 GB)</h3>
+                                    <p class="text-gray-500">Supports multiple teams and a growing number of agents.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold">Estimated Cost</p>
+                                <p class="text-3xl font-bold text-teal-600">~$3,300 / mo</p>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 border-t border-gray-200 bg-gray-50">
+                                <dl class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="col-span-1 md:col-span-3 font-bold text-lg text-gray-700 pb-2 border-b">Cost & Tech Breakdown</div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Ingestion & Storage</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">ADF (increased parallelism), ADLS Gen2 with tiered storage (Hot/Cool).</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$700</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Curation</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure Databricks (auto-scaling cluster for jobs).</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$1,200</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">AI Engines & Serving</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure AI Search (Standard S1), AKS (small cluster for Docker containers), Cosmos DB for metadata.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$1,400</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Tier 3: Scale -->
+                    <div class="card rounded-lg overflow-hidden">
+                        <button class="accordion-toggle w-full text-left p-6 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-4">🏢</span>
+                                <div>
+                                    <h3 class="text-2xl font-semibold text-gray-800">Scale Tier (500 GB)</h3>
+                                    <p class="text-gray-500">Supports enterprise-wide adoption and complex agents.</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold">Estimated Cost</p>
+                                <p class="text-3xl font-bold text-teal-600">~$14,000 / mo</p>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 border-t border-gray-200 bg-gray-50">
+                                <dl class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="col-span-1 md:col-span-3 font-bold text-lg text-gray-700 pb-2 border-b">Cost & Tech Breakdown</div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Ingestion & Storage</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure Event Hubs for streaming, ADF for batch, ADLS Gen2.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$3,000</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">Data Curation</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Multiple dedicated, auto-scaling Databricks clusters for workload isolation.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$5,000</dd>
+                                    </div>
+                                    <div class="rounded-lg p-4 bg-white">
+                                        <dt class="font-semibold text-gray-600">AI Engines & Serving</dt>
+                                        <dd class="text-sm text-gray-500 mt-1">Azure AI Search (High-Performance), AKS with GPU nodes, API Management, Redis Cache, Microsoft Purview.</dd>
+                                        <dd class="text-right font-bold text-lg mt-2">~$6,000</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
     <footer class="bg-gray-800 text-white py-8">
@@ -835,14 +966,14 @@
                     const icon = toggle.querySelector('span');
                     if (content.style.maxHeight) {
                         content.style.maxHeight = null;
-                        icon.style.transform = 'rotate(0deg)';
+                        if(icon) icon.style.transform = 'rotate(0deg)';
                     } else {
-                        accordionToggles.forEach(otherToggle => {
-                            otherToggle.nextElementSibling.style.maxHeight = null;
-                            otherToggle.querySelector('span').style.transform = 'rotate(0deg)';
-                        });
+                        // Close other accordions before opening a new one
+                        document.querySelectorAll('.accordion-content').forEach(acc => acc.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-toggle span').forEach(ic => { if(ic) ic.style.transform = 'rotate(0deg)'});
+
                         content.style.maxHeight = content.scrollHeight + 'px';
-                        icon.style.transform = 'rotate(180deg)';
+                        if(icon) icon.style.transform = 'rotate(180deg)';
                     }
                 });
             });
@@ -856,17 +987,13 @@
                     if (targetElement) {
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         const toggle = targetElement.querySelector('.accordion-toggle');
-                        const content = toggle.nextElementSibling;
-                        const icon = toggle.querySelector('span');
-                        accordionToggles.forEach(otherToggle => {
-                            otherToggle.nextElementSibling.style.maxHeight = null;
-                            otherToggle.querySelector('span').style.transform = 'rotate(0deg)';
-                        });
-                        if (!content.style.maxHeight) {
-                           setTimeout(() => {
-                             content.style.maxHeight = content.scrollHeight + 'px';
-                             icon.style.transform = 'rotate(180deg)';
-                           }, 500);
+                        if (toggle) {
+                            // Delay click to allow for scroll
+                            setTimeout(() => {
+                                if (!toggle.nextElementSibling.style.maxHeight) {
+                                    toggle.click();
+                                }
+                            }, 500);
                         }
                     }
                 });
@@ -910,3 +1037,4 @@
     </script>
 </body>
 </html>
+
